@@ -8,7 +8,10 @@ class PluckerAuthorFastSerializer < Plucker::Base
 end
 
 class PluckerPostFastSerializer < Plucker::Base
-    attributes :id, :body, :title, :author_id, :created_at
+    attributes :id, :body, :title, :created_at
+    attribute :authori do |object|
+        object.author_id
+    end
 end
 
 class PluckerPostWithHasOneFastSerializer < Plucker::Base
@@ -38,8 +41,8 @@ def benchmark_plucker(prefix, serializer, options = {})
     Benchmark.run("Plucker_#{prefix}_Posts_50") do
         Plucker::Collection.new(posts_50, serializer: serializer).to_h
     end
-  end
+end
   
-  benchmark_plucker "Simple", PluckerPostFastSerializer
-  benchmark_plucker "HasOne", PluckerPostWithHasOneFastSerializer
-  #benchmark_plucker "HasMany", PluckerAuthorWithHasManyFastSerializer
+benchmark_plucker "Simple", PluckerPostFastSerializer
+benchmark_plucker "HasOne", PluckerPostWithHasOneFastSerializer
+#benchmark_plucker "HasMany", PluckerAuthorWithHasManyFastSerializer

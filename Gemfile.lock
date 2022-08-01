@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    serializer (0.1.0)
+    plucker_serializer (0.1.0)
       activesupport
 
 GEM
@@ -120,6 +120,7 @@ GEM
     zeitwerk (2.6.0)
 
 PLATFORMS
+  ruby
   x86_64-linux
 
 DEPENDENCIES
@@ -133,15 +134,15 @@ DEPENDENCIES
   memory_profiler
   panko_serializer
   pg (>= 0.18, < 2.0)
+  plucker_serializer!
   rake
   rake-compiler
   rspec (~> 3.0)
   rubocop
   ruby-prof
   ruby-prof-flamegraph
-  serializer!
   sqlite3 (~> 1.4)
   terminal-table
 
 BUNDLED WITH
-   2.2.24
+   2.2.29

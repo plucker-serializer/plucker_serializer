@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require_relative 'caching'
+require_relative 'concerns/caching'
 require_relative 'descriptor'
 require_relative 'has_many'
 require_relative 'belongs_to'

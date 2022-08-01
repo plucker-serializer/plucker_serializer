@@ -9,6 +9,7 @@ module Plucker
       with_options instance_writer: false, instance_reader: false do |serializer|
         serializer.class_attribute :_cache
         serializer.class_attribute :_cache_options
+        serializer.class_attribute :_cache_store
       end
     end
 
@@ -20,22 +21,18 @@ module Plucker
 
       def cache(options = {})
         self._cache = true
+        self._cache_store = Plucker.config.cache_store || ActiveSupport::Cache.lookup_store(:null_store)
         self._cache_options = options.blank? ? {} : options
       end
 
-      def cache_store
-        defined?(Rails) && Rails.cache
-      end
-
       def cache_enabled?
-        cache_store.present? && _cache.present?
+        self._cache_store.present? && _cache.present?
       end
     end
 
-    ### INSTANCE METHODS
     def fetch
       if serializer_class.cache_enabled?
-        serializer_class.cache_store.fetch(cache_key, version: cache_version, options: serializer_class._cache_options) do
+        self.class._cache_store.fetch(cache_key, version: cache_version, options: serializer_class._cache_options) do
           yield
         end
       else

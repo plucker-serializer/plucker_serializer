@@ -7,8 +7,8 @@ require 'plucker/version'
 Gem::Specification.new do |s|
     s.name        = "plucker_serializer"
     s.version     = Plucker::VERSION
-    s.summary     = "A blazing fast JSON serializer with an easy-to-use API"
-    s.description = "A blazing fast JSON serializer"
+    s.summary = "A blazing fast JSON serializer for ActiveRecord & Ruby objects"
+    s.description = "A blazing fast JSON serializer for ActiveRecord & Ruby objects"
     s.authors     = ["Henry Boisgibault"]
     s.email       = "henry@logora.fr"
     s.files = Dir['lib/**/*']

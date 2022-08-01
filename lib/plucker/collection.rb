@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require_relative 'concerns/caching'
+
 module Plucker
   class Collection
     include Enumerable
