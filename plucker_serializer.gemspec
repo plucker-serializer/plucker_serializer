@@ -15,6 +15,13 @@ Gem::Specification.new do |s|
     s.require_paths = ["lib"]
     s.license       = "MIT"
     s.required_ruby_version = ">= 2.5.0"
+    s.homepage      = "https://github.com/plucker-serializer/plucker_serializer"
+    s.metadata = {
+        "bug_tracker_uri" => "https://github.com/plucker-serializer/plucker_serializer/issues",
+        "source_code_uri" => "https://github.com/plucker-serializer/plucker_serializer",
+        "documentation_uri" => "https://github.com/plucker-serializer/plucker_serializer",
+        "changelog_uri" => "https://github.com/plucker-serializer/plucker_serializer/releases"
+    }
 
     s.add_dependency "activesupport"
 end
