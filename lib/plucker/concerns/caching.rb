@@ -32,7 +32,7 @@ module Plucker
 
     def fetch
       if serializer_class.cache_enabled?
-        self.class._cache_store.fetch(cache_key, version: cache_version, options: serializer_class._cache_options) do
+        serializer_class._cache_store.fetch(cache_key, version: cache_version, options: serializer_class._cache_options) do
           yield
         end
       else
