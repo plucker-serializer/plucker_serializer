@@ -5,7 +5,12 @@ require_relative "field"
 module Plucker
     class Relationship < Plucker::Field
         def associated_object(serializer)
-            serializer.object.send(name)
+            block_value = instance_exec(serializer.object, &block) if block
+            if block && block_value != :nil
+                block_value
+            else
+                serializer.object.send(name)
+            end
         end
 
         def value(serializer)

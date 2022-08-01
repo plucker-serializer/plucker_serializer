@@ -25,19 +25,16 @@ end
 
 
 def benchmark(prefix, serializer, options = {})
-  data = Benchmark.data
-  posts = Post.all.includes(:author)
-
   merged_options = options.merge(each_serializer: serializer)
 
-  Benchmark.run("Panko_ActiveRecord_#{prefix}_Posts_#{posts.count}") do
-    Panko::ArraySerializer.new(posts, merged_options).to_a
-  end
-
   posts_50 = Post.all.limit(50)
-
   Benchmark.run("Panko_ActiveRecord_#{prefix}_Posts_50") do
     Panko::ArraySerializer.new(posts_50, merged_options).to_a
+  end
+
+  posts = Post.all.includes(:author)
+  Benchmark.run("Panko_ActiveRecord_#{prefix}_Posts_#{posts.count}") do
+    Panko::ArraySerializer.new(posts, merged_options).to_a
   end
 end
 

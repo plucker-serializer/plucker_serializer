@@ -79,4 +79,97 @@ describe Plucker::Base do
         expect(FooWithBlockAttributeSerializer.new(foo).to_h).to eq({name: foo.name, address: foo.name})
     end
   end
+
+  context "associations" do
+    it "has_one" do
+      class FooHolderSerializer < Plucker::Base
+          attributes :name
+
+          has_one :foo
+      end
+
+      foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+      foo_holder = FooHolder.create(name: Faker::Lorem.word, foo: foo).reload
+
+      expect(FooHolderSerializer.new(foo_holder).to_h).to eq({name: foo_holder.name, foo: {name: foo.name, address: foo.address}})
+    end
+
+    it "has_one with key" do
+      class FooHolderWithKeySerializer < Plucker::Base
+          attributes :name
+
+          has_one :foo, key: :bar
+      end
+
+      foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+      foo_holder = FooHolder.create(name: Faker::Lorem.word, foo: foo).reload
+
+      expect(FooHolderWithKeySerializer.new(foo_holder).to_h).to eq({name: foo_holder.name, bar: {name: foo.name, address: foo.address}})
+    end
+
+    it "has_many" do
+      class FoosHolderSerializer < Plucker::Base
+          attributes :name
+
+          has_many :foos
+      end
+
+      foo1 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+      foo2 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+      foos_holder = FoosHolder.create(name: Faker::Lorem.word)
+      foos_holder.foos << foo1
+      foos_holder.foos << foo2
+      foos_holder.reload
+
+      expect(foos_holder.foos.size).to eq(2)
+      expect(FoosHolderSerializer.new(foos_holder).to_h).to eq({name: foos_holder.name, foos: [{name: foo1.name, address: foo1.address, updated_at: foo1.updated_at},
+                                                                                               {name: foo2.name, address: foo2.address, updated_at: foo2.updated_at}]})
+    end
+
+    it "has_many custom serializer" do
+      class FooCustomSerializer < Plucker::Base
+        attributes :name
+      end
+
+      class FoosHolderCustomSerializer < Plucker::Base
+          attributes :name
+
+          has_many :foos, serializer: FooCustomSerializer
+      end
+      
+      foo1 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+      foo2 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+      foos_holder = FoosHolder.create(name: Faker::Lorem.word)
+      foos_holder.foos << foo1
+      foos_holder.foos << foo2
+      foos_holder.reload
+
+      expect(foos_holder.foos.size).to eq(2)
+      expect(FoosHolderCustomSerializer.new(foos_holder).to_h).to eq({name: foos_holder.name, foos: [{name: foo1.name}, {name: foo2.name}]})
+    end
+
+    it "has_many custom serializer" do
+      class FooCustomBlockSerializer < Plucker::Base
+        attributes :name
+      end
+
+      class FoosHolderCustomBlockSerializer < Plucker::Base
+          attributes :name
+
+          has_many :foos, serializer: FooCustomBlockSerializer do |object|
+            object.foos.limit(1)
+          end
+      end
+      
+      foo1 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+      foo2 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+      foos_holder = FoosHolder.create(name: Faker::Lorem.word)
+      foos_holder.foos << foo1
+      foos_holder.foos << foo2
+      foos_holder.reload
+
+      expect(foos_holder.foos.size).to eq(2)
+      expect(FoosHolderCustomBlockSerializer.new(foos_holder).to_h).to eq({name: foos_holder.name, foos: [{name: foo1.name}]})
+    end
+  end
 end

@@ -132,7 +132,18 @@ By default, Plucker will use the `${MODEL}Serializer` serializer class for assoc
 with the `serializer` option. Plucker will use the name of the model and not the name of the association, so for example if you
 have an `author` association that links a Post to a User, Plucker will use the `UserSerializer` class by default.
 
-As for attributes, it is also possible to pass a custom key for an association.
+As for attributes, it is also possible to pass a custom key for an association, and to add a block :
+
+``` ruby
+class PostSerializer < Plucker::Base
+    attributes :title, :description
+    
+    has_many :tags, serializer: TagCustomSerializer do |object|
+      # block must return an ActiveRecord::Collection
+      object.tags.limit(1)
+    end
+end
+```
 
 ### Model and serializer classes
 
