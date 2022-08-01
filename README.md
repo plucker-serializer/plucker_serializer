@@ -52,7 +52,7 @@ post = Post.last
 post_serialized = PostSerializer.new(post).to_json
 ```
 ``` json
-=> { "title": "my-post-title" }
+{ "title": "my-post-title" }
 ```
 
 
@@ -62,7 +62,7 @@ posts = Post.all
 posts_serialized = Plucker::Collection.new(posts).to_json
 ```
 ``` json
-=> [{ "title": "my-post-title" }, { "title": "my-second-post-title" }]
+[{ "title": "my-post-title" }, { "title": "my-second-post-title" }]
 ```
 
 ## Describing your objects with Plucker
@@ -100,7 +100,7 @@ class PostSerializer < Plucker::Base
 end
 ```
 ``` json
-=> { "title": "my-post-title", "summary": "my-post-description" }
+{ "title": "my-post-title", "summary": "my-post-description" }
 ```
 
 ### Associations
