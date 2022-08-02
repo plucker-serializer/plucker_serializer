@@ -3,7 +3,7 @@ require "spec_helper"
 require "active_record/connection_adapters/postgresql_adapter"
 
 describe Plucker::Caching do
-    context "attributes" do
+    context "cache configuration" do
         it "caches default" do
             class FooCacheSerializer < Plucker::Base
                 cache
@@ -14,7 +14,7 @@ describe Plucker::Caching do
             
             serializer_instance = FooCacheSerializer.new(foo)
             expect(FooCacheSerializer.cache_enabled?).to eq(true)
-            expect(serializer_instance.to_h).to eq({name: foo.name, address: foo.address})
+            expect(serializer_instance.to_h).to eq({"name" => foo.name, "address" => foo.address})
         end
 
         it "no caching if option not passed" do
@@ -31,7 +31,7 @@ describe Plucker::Caching do
             
             serializer_instance = FooNoCacheSerializer.new(foo)
             expect(FooNoCacheSerializer.cache_enabled?).to eq(false)
-            expect(serializer_instance.to_h).to eq({name: foo.name, address: foo.address})
+            expect(serializer_instance.to_h).to eq({"name" => foo.name, "address" => foo.address})
 
             expect(serializer_instance.cache_key).to eq(cache_key)
             expect(memory_store.exist?(cache_key)).to be(false)
@@ -52,7 +52,7 @@ describe Plucker::Caching do
             
             serializer_instance = FooMemoryCacheSerializer.new(foo)
             expect(FooMemoryCacheSerializer.cache_enabled?).to eq(true)
-            expect(serializer_instance.to_h).to eq({name: foo.name, address: foo.address})
+            expect(serializer_instance.to_h).to eq({"name" => foo.name, "address" => foo.address})
 
             expect(serializer_instance.cache_key).to eq(cache_key)
             expect(memory_store.exist?(cache_key)).to be(true)

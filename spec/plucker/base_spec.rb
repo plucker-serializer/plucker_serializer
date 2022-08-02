@@ -11,13 +11,19 @@ describe Plucker::Base do
     it "from database" do
       foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
 
-      expect(FooSerializer.new(foo).to_h).to eq({name: foo.name, address: foo.address})
+      expect(FooSerializer.new(foo).to_h).to eq({"name" => foo.name, "address" => foo.address})
     end
 
     it "from memory" do
       foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word)
 
-      expect(FooSerializer.new(foo).to_h).to eq({name: foo.name, address: foo.address})
+      expect(FooSerializer.new(foo).to_h).to eq({"name" => foo.name, "address" => foo.address})
+    end
+
+    it "as_json" do
+      foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word)
+
+      expect(FooSerializer.new(foo).as_json).to eq({"name" => foo.name, "address" => foo.address})
     end
 
     it "plain object" do
@@ -32,7 +38,7 @@ describe Plucker::Base do
 
       foo = PlainFoo.new(Faker::Lorem.word, Faker::Lorem.word)
 
-      expect(FooSerializer.new(foo).to_h).to eq({name: foo.name, address: foo.address})
+      expect(FooSerializer.new(foo).to_h).to eq({"name" => foo.name, "address" => foo.address})
     end
   end
 
@@ -52,7 +58,7 @@ describe Plucker::Base do
 
       foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
 
-      expect(FooWithMethodsSerializer.new(foo).to_h).to eq({name: foo.name, address: foo.address, something: "#{foo.name} #{foo.address}"})
+      expect(FooWithMethodsSerializer.new(foo).to_h).to eq({"name" => foo.name, "address" => foo.address, "something" => "#{foo.name} #{foo.address}"})
     end
 
     it "method attributes with key" do
@@ -63,7 +69,7 @@ describe Plucker::Base do
   
         foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
   
-        expect(FooWithKeyAttributeSerializer.new(foo).to_h).to eq({name: foo.name, addr: foo.address})
+        expect(FooWithKeyAttributeSerializer.new(foo).to_h).to eq({"name" => foo.name, "addr" => foo.address})
     end
 
     it "method attributes with block" do
@@ -76,7 +82,7 @@ describe Plucker::Base do
   
         foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
   
-        expect(FooWithBlockAttributeSerializer.new(foo).to_h).to eq({name: foo.name, address: foo.name})
+        expect(FooWithBlockAttributeSerializer.new(foo).to_h).to eq({"name" => foo.name, "address" => foo.name})
     end
   end
 
@@ -91,7 +97,7 @@ describe Plucker::Base do
       foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
       foo_holder = FooHolder.create(name: Faker::Lorem.word, foo: foo).reload
 
-      expect(FooHolderSerializer.new(foo_holder).to_h).to eq({name: foo_holder.name, foo: {name: foo.name, address: foo.address}})
+      expect(FooHolderSerializer.new(foo_holder).to_h).to eq({"name" => foo_holder.name, "foo" => {"name" => foo.name, "address" => foo.address}})
     end
 
     it "has_one with key" do
@@ -104,7 +110,7 @@ describe Plucker::Base do
       foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
       foo_holder = FooHolder.create(name: Faker::Lorem.word, foo: foo).reload
 
-      expect(FooHolderWithKeySerializer.new(foo_holder).to_h).to eq({name: foo_holder.name, bar: {name: foo.name, address: foo.address}})
+      expect(FooHolderWithKeySerializer.new(foo_holder).to_h).to eq({"name" => foo_holder.name, "bar" => {"name" => foo.name, "address" => foo.address}})
     end
 
     it "has_many" do
@@ -122,8 +128,7 @@ describe Plucker::Base do
       foos_holder.reload
 
       expect(foos_holder.foos.size).to eq(2)
-      expect(FoosHolderSerializer.new(foos_holder).to_h).to eq({name: foos_holder.name, foos: [{name: foo1.name, address: foo1.address, updated_at: foo1.updated_at},
-                                                                                               {name: foo2.name, address: foo2.address, updated_at: foo2.updated_at}]})
+      expect(FoosHolderSerializer.new(foos_holder).to_h).to eq({"name" => foos_holder.name, "foos" => [{"name" => foo1.name, "address" => foo1.address}, {"name" => foo2.name, "address" => foo2.address}]})
     end
 
     it "has_many custom serializer" do
@@ -145,10 +150,10 @@ describe Plucker::Base do
       foos_holder.reload
 
       expect(foos_holder.foos.size).to eq(2)
-      expect(FoosHolderCustomSerializer.new(foos_holder).to_h).to eq({name: foos_holder.name, foos: [{name: foo1.name}, {name: foo2.name}]})
+      expect(FoosHolderCustomSerializer.new(foos_holder).to_h).to eq({"name" => foos_holder.name, "foos" => [{"name" => foo1.name}, {"name" => foo2.name}]})
     end
 
-    it "has_many custom serializer" do
+    it "has_many with block" do
       class FooCustomBlockSerializer < Plucker::Base
         attributes :name
       end
@@ -160,7 +165,7 @@ describe Plucker::Base do
             object.foos.limit(1)
           end
       end
-      
+
       foo1 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
       foo2 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
       foos_holder = FoosHolder.create(name: Faker::Lorem.word)
@@ -169,7 +174,7 @@ describe Plucker::Base do
       foos_holder.reload
 
       expect(foos_holder.foos.size).to eq(2)
-      expect(FoosHolderCustomBlockSerializer.new(foos_holder).to_h).to eq({name: foos_holder.name, foos: [{name: foo1.name}]})
+      expect(FoosHolderCustomBlockSerializer.new(foos_holder).to_h).to eq({"name" => foos_holder.name, "foos" => [{"name" => foo1.name}]})
     end
   end
 end

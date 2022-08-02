@@ -7,12 +7,12 @@ module Plucker
             self._serialized_model = get_serialized_model(serializer_class)
             self._attributes = {}
             self._relationships = {}
-            self._pluckable_columns = Set.new([:updated_at])
+            self._pluckable_columns = Set.new
             self._is_pluckable = true
         end
 
         def is_pluckable?
-            self._is_pluckable && !self._relationships.present?
+            self._is_pluckable
         end
 
         def add_attribute(key, attr)

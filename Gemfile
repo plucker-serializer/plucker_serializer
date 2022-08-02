@@ -9,7 +9,7 @@ rails_version = "~> #{raw_rails_version}"
 gem "activesupport", rails_version
 gem "activemodel", rails_version
 gem "activerecord", rails_version, group: :test
-
+gem "pluck_all", "~> 2.3.3"
 
 group :benchmarks do
   gem "sqlite3", "~> 1.4"

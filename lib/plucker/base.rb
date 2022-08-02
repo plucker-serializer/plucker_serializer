@@ -38,19 +38,19 @@ module Plucker
         alias to_hash serializable_hash
         alias to_h serializable_hash
 
-        def get_hash
-            attributes_hash.merge! associations_hash
+        def as_json(options = nil)
+            serializable_hash
         end
 
-        def as_json(options = nil)
-            to_h.as_json(options)
+        def get_hash
+            attributes_hash.merge! associations_hash
         end
 
         def associations_hash
             hash = {}
             self.class._descriptor._relationships.each do |(key, relationship)|
                 next if relationship.excluded?(self)
-                hash[key] = relationship.value(self)
+                hash[key.to_s] = relationship.value(self)
             end
             hash
         end
@@ -58,7 +58,7 @@ module Plucker
         def attributes_hash
             self.class._descriptor._attributes.each_with_object({}) do |(key, attr), hash|
                 next if attr.excluded?(self)
-                hash[key] = attr.value(self)
+                hash[key.to_s] = attr.value(self)
             end
         end
 

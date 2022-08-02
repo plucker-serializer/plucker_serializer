@@ -15,7 +15,7 @@ class AmsPostFastSerializer < ActiveModel::Serializer
 end
 
 class AmsPostWithHasOneFastSerializer < ActiveModel::Serializer
-  attributes :id, :body, :title, :author_id
+  attributes :id, :body, :title, :author_id, :created_at
 
   has_one :author, serializer: AmsAuthorFastSerializer
 end
@@ -27,15 +27,15 @@ class AmsAuthorWithHasManyFastSerializer < ActiveModel::Serializer
 end
 
 def benchmark_ams(prefix, serializer, options = {})
-  merged_options = options.merge(each_serializer: serializer)  
-  
-  posts_50 = Post.all.limit(50)
+  merged_options = options.merge(each_serializer: serializer)
+
   Benchmark.run("AMS_#{prefix}_Posts_50") do
+    posts_50 = Post.all.limit(50)
     ActiveModelSerializers::SerializableResource.new(posts_50, merged_options).to_json
   end
 
-  posts = Post.all.includes(:author)
-  Benchmark.run("AMS_#{prefix}_Posts_#{posts.count}") do
+  Benchmark.run("AMS_#{prefix}_Posts_10000") do
+    posts = Post.all.includes(:author)
     ActiveModelSerializers::SerializableResource.new(posts, merged_options).to_json
   end
 end

@@ -12,21 +12,35 @@ describe Plucker::Collection do
             foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
             foo2 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
 
-            expect(Plucker::Collection.new(Foo.all, serializer: FooSerializer).to_h).to eq([{name: foo.name, address: foo.address, updated_at: foo.updated_at}, 
-                                                                                               {name: foo2.name, address: foo2.address, updated_at: foo2.updated_at}])
+            expect(Plucker::Collection.new(Foo.all, serializer: FooSerializer).to_h).to eq([{"name" => foo.name, "address" => foo.address}, {"name" => foo2.name, "address" => foo2.address}])
         end
     end
 
     context "custom options" do
         it "custom serializer" do
             class FooCustomSerializer < Plucker::Base
-                attributes :name
+                attribute :name
             end
 
             foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
             foo2 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
 
-            expect(Plucker::Collection.new(Foo.all, serializer: FooCustomSerializer).to_h).to eq([{name: foo.name}, {name: foo2.name}])
+            expect(Plucker::Collection.new(Foo.all, serializer: FooCustomSerializer).to_h).to eq([{"name" => foo.name}, {"name" => foo2.name}])
+        end
+    end
+
+    context "plucking" do
+        it "base" do
+            class FooPluckedSerializer < Plucker::Base
+                model Foo
+                attribute :name
+            end
+
+            foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+            foo2 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+
+            expect(FooPluckedSerializer.is_pluckable?).to eq(true)
+            expect(Plucker::Collection.new(Foo.all, serializer: FooPluckedSerializer).to_h).to eq([{"name" => foo.name}, {"name" => foo2.name}])
         end
     end
 end

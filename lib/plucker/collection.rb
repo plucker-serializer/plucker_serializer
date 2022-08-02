@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require_relative 'concerns/caching'
+require "pluck_all"
 
 module Plucker
   class Collection
@@ -22,22 +23,10 @@ module Plucker
       else
         if serializer_class.cache_enabled?
           fetch do
-            if serializer_class.is_pluckable?
-              associated_hash
-            else
-              objects.map do |object|
-                serializer_class.new(object).serializable_hash
-              end.compact
-            end
+            get_hash
           end
         else
-          if serializer_class.is_pluckable?
-            associated_hash
-          else
-            objects.map do |object|
-              serializer_class.new(object).serializable_hash
-            end.compact
-          end
+          get_hash
         end
       end
     end
@@ -45,7 +34,17 @@ module Plucker
     alias to_h serializable_hash
 
     def as_json(options = nil)
-      to_h.as_json(options)
+      serializable_hash
+    end
+
+    def get_hash
+      if serializer_class.is_pluckable?
+        associated_hash
+      else
+        objects.map do |object|
+          serializer_class.new(object).serializable_hash
+        end.compact
+      end
     end
 
     def cache_version
@@ -63,9 +62,9 @@ module Plucker
       pluck_to_hash(objects, serializer_class.pluckable_columns.to_a)
     end
 
-    def pluck_to_hash(object, attrs)
-      namespaced_attrs = attrs.map { |attr| object.model.table_name.to_s + "." + attr.to_s }
-      object.pluck(Arel.sql(namespaced_attrs.join(','))).map { |el| attrs.zip(el).to_h }
+    def pluck_to_hash(objects, attrs)
+      namespaced_attrs = attrs.map { |attr| objects.model.table_name.to_s + "." + attr.to_s }
+      objects.pluck_all(namespaced_attrs.join(','))
     end
 
     def get_serialized_model(objects)
