@@ -3,6 +3,7 @@ PATH
   specs:
     plucker_serializer (0.2.2)
       activesupport
+      pluck_all
 
 GEM
   remote: https://rubygems.org/
