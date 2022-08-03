@@ -218,6 +218,50 @@ $ rake benchmarks
 ```
 
 
++----------------------------------------------------------+
+|                        bm_plucker                        |
++-----------------------------+----------+-----------------+
+| Benchmark                   | ip/s     | allocs/retained |
++-----------------------------+----------+-----------------+
+| Plucker_Simple_Posts_50     | 1,087.98 | 1723/5          |
+| Plucker_Simple_Posts_10000  | 63.5     | 33197/126       |
+| Plucker_HasOne_Posts_50     | 88.72    | 11374/83        |
+| Plucker_HasOne_Posts_10000  | 18.45    | 97772/76        |
+| Plucker_HasMany_Posts_50    | 39.26    | 34772/71        |
+| Plucker_HasMany_Posts_10000 | 1.89     | 692236/1        |
++-----------------------------+----------+-----------------+
+
++---------------------------------------------------------------------+
+|                              bm_panko                               |
++----------------------------------------+----------+-----------------+
+| Benchmark                              | ip/s     | allocs/retained |
++----------------------------------------+----------+-----------------+
+| Panko_ActiveRecord_Simple_Posts_50     | 2,164.93 | 871/24          |
+| Panko_ActiveRecord_Simple_Posts_10000  | 44.78    | 33792/80        |
+| Panko_ActiveRecord_HasOne_Posts_50     | 107.0    | 8337/80         |
+| Panko_ActiveRecord_HasOne_Posts_10000  | 41.59    | 34255/22023     |
+| Panko_ActiveRecord_HasMany_Posts_50    | 61.75    | 18543/102       |
+| Panko_ActiveRecord_HasMany_Posts_10000 | 2.72     | 364255/168023   |
++----------------------------------------+----------+-----------------+
+
++----------------------------------------------------+
+|                    bm_ams_0_10                     |
++-------------------------+--------+-----------------+
+| Benchmark               | ip/s   | allocs/retained |
++-------------------------+--------+-----------------+
+| AMS_Simple_Posts_50     | 245.07 | 5825/162        |
+| AMS_Simple_Posts_10000  | 10.05  | 112831/77       |
+| AMS_HasOne_Posts_50     | 57.19  | 15656/87        |
+| AMS_HasOne_Posts_10000  | 5.52   | 179286/2        |
+| AMS_HasMany_Posts_50    | 17.49  | 58399/109       |
+| AMS_HasMany_Posts_10000 | 0.89   | 1159286/2       |
++-------------------------+--------+-----------------+
+
+Plucker shows significant performance improvements compared to ActiveModelSerializer.
+When looking at Panko, we can also see improvements in throughput and memory for large collections, thanks to the plucking strategy. Panko seems to have memory problems for large collections.
+The benchmarks do not include caching, and Plucker would see a huge boost compared to Panko if caching were enabled. We did not add it to the benchmark because it would only make sense in a live application.
+
+
 ## License
 
 The gem is available as open source under the terms of the MIT License.
