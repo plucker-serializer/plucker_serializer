@@ -189,11 +189,15 @@ end
 
 Plucker uses ActiveRecord's `cache_key` and `cache_version` for single objects and collections.
 
-To avoid collection caching, use a serializer class with `map` instead of the `Plucker::Collection` class :
+When caching a collection, ActiveRecord will query the database to get the last updated object. The cache key
+will include a hash of the SQL query.
+This can be a performance issue in some cases, depending on your application.
+To avoid collection caching, use the `cache` option with `multi` when instantiating the collection :
 ``` ruby
 posts = Post.all
-posts_serialized = posts.map { |p| PostSerializer.new(p).to_json }
+posts_serialized = Plucker::Collection.new(posts, cache: :multi)
 ```
+This will tell Plucker to not cache the whole collection but to cache each object separately.
 
 
 ## Tests
