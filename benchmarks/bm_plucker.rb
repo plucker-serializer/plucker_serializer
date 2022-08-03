@@ -8,6 +8,11 @@ class PluckerAuthorFastSerializer < Plucker::Base
     attributes :id, :name
 end
 
+class PluckerTagSerializer < Plucker::Base
+    model Tag
+    attributes :display_name, :description, :created_at
+end
+
 class PluckerPostNoPluckingSerializer < Plucker::Base
     attributes :id, :body, :title, :author_id, :created_at
 end
@@ -17,18 +22,18 @@ class PluckerPostFastSerializer < Plucker::Base
     attributes :id, :body, :title, :author_id, :created_at
 end
 
-class PluckerPostWithHasOneFastSerializer < Plucker::Base
+class PluckerPostHasOneSerializer < Plucker::Base
     model Post
     attributes :id, :body, :title, :author_id, :created_at
 
     has_one :author, serializer: PluckerAuthorFastSerializer
 end
 
-class PluckerAuthorWithHasManyFastSerializer < Plucker::Base
-    model Author
-    attributes :id, :name
+class PluckerPostHasManySerializer < Plucker::Base
+    model Post
+    attributes :id, :body, :title, :author_id, :created_at
 
-    has_many :posts, serializer: PluckerPostFastSerializer
+    has_many :tags, serializer: PluckerTagSerializer
 end
 
 def benchmark_plucker(prefix, serializer, options = {})
@@ -45,7 +50,6 @@ def benchmark_plucker(prefix, serializer, options = {})
     end
 end
 
-benchmark_plucker "No Plucking", PluckerPostNoPluckingSerializer
 benchmark_plucker "Simple", PluckerPostFastSerializer
-benchmark_plucker "HasOne", PluckerPostWithHasOneFastSerializer
-#benchmark_plucker "HasMany", PluckerAuthorWithHasManyFastSerializer
+benchmark_plucker "HasOne", PluckerPostHasOneSerializer
+benchmark_plucker "HasMany", PluckerPostHasManySerializer

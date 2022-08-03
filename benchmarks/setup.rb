@@ -28,6 +28,13 @@ ActiveRecord::Schema.define do
     t.json :data
     t.timestamps(null: false)
   end
+
+  create_table :tags, force: true do |t|
+    t.text :description
+    t.string :display_name
+    t.references :post
+    t.timestamps(null: false)
+  end
 end
 
 class Author < ActiveRecord::Base
@@ -37,19 +44,34 @@ end
 
 class Post < ActiveRecord::Base
   belongs_to :author
+
+  has_many :tags
+end
+
+class Tag < ActiveRecord::Base
+  belongs_to :post
 end
 
 Post.destroy_all
 Author.destroy_all
+Tag.destroy_all
 
 # Build out the data to serialize
 Post.transaction do
   ENV.fetch("ITEMS_COUNT", "10000").to_i.times do
-    Post.create(
+    post = Post.create(
       body: "something about how password restrictions are evil, and less secure, and with the math to prove it.",
       title: "Your bank is does not know how to do security",
       author: Author.create(name: "Preston Sego"),
       data: { a: 1, b: 2, c: 3 }
     )
+
+    10.to_i.times do
+      Tag.create(
+        description: "this category is not about politics",
+        display_name: "category",
+        post: post
+      )
+    end
   end
 end

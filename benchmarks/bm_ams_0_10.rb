@@ -10,6 +10,10 @@ class AmsAuthorFastSerializer < ActiveModel::Serializer
   attributes :id, :name
 end
 
+class AmsTagSerializer < ActiveModel::Serializer
+  attributes :display_name, :description, :created_at
+end
+
 class AmsPostFastSerializer < ActiveModel::Serializer
   attributes :id, :body, :title, :author_id, :created_at
 end
@@ -20,10 +24,10 @@ class AmsPostWithHasOneFastSerializer < ActiveModel::Serializer
   has_one :author, serializer: AmsAuthorFastSerializer
 end
 
-class AmsAuthorWithHasManyFastSerializer < ActiveModel::Serializer
-  attributes :id, :name
+class AmsPostHasManySerializer < ActiveModel::Serializer
+  attributes :id, :body, :title, :author_id, :created_at
 
-  has_many :posts, serializer: AmsPostFastSerializer
+  has_many :tags, serializer: AmsTagSerializer
 end
 
 def benchmark_ams(prefix, serializer, options = {})
@@ -40,6 +44,6 @@ def benchmark_ams(prefix, serializer, options = {})
   end
 end
 
-benchmark_ams "Attributes_Simple", AmsPostFastSerializer
-benchmark_ams "Attributes_HasOne", AmsPostWithHasOneFastSerializer
-#benchmark_ams "Attributes_HasMany", AmsAuthorWithHasManyFastSerializer
+benchmark_ams "Simple", AmsPostFastSerializer
+benchmark_ams "HasOne", AmsPostWithHasOneFastSerializer
+benchmark_ams "HasMany", AmsPostHasManySerializer

@@ -8,6 +8,10 @@ class AuthorFastSerializer < Panko::Serializer
   attributes :id, :name
 end
 
+class TagSerializer < Panko::Serializer
+  attributes :display_name, :description, :created_at
+end
+
 class PostFastSerializer < Panko::Serializer
   attributes :id, :body, :title, :author_id, :created_at
 end
@@ -18,12 +22,11 @@ class PostWithHasOneFastSerializer < Panko::Serializer
   has_one :author, serializer: AuthorFastSerializer
 end
 
-class AuthorWithHasManyFastSerializer < Panko::Serializer
-  attributes :id, :name
+class PostHasManySerializer < Panko::Serializer
+  attributes :id, :body, :title, :author_id, :created_at
 
-  has_many :posts, serializer: PostFastSerializer
+  has_many :tags, serializer: TagSerializer
 end
-
 
 def benchmark(prefix, serializer, options = {})
   merged_options = options.merge(each_serializer: serializer)
@@ -41,4 +44,4 @@ end
 
 benchmark "Simple", PostFastSerializer
 benchmark "HasOne", PostWithHasOneFastSerializer
-#benchmark "HasMany", AuthorWithHasManyFastSerializer
+benchmark "HasMany", PostHasManySerializer

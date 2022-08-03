@@ -1,8 +1,9 @@
 PATH
   remote: .
   specs:
-    plucker_serializer (0.2.2)
+    plucker_serializer (0.3.0)
       activesupport
+      oj
       pluck_all
 
 GEM
@@ -142,6 +143,7 @@ DEPENDENCIES
   byebug
   faker
   memory_profiler
+  oj (~> 3.13.19)
   panko_serializer
   pg (>= 0.18, < 2.0)
   pluck_all (~> 2.3.3)

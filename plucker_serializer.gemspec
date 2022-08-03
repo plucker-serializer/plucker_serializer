@@ -24,5 +24,6 @@ Gem::Specification.new do |s|
     }
 
     s.add_dependency "activesupport"
+    s.add_dependency "oj"
     s.add_dependency "pluck_all"
 end

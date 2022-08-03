@@ -4,6 +4,7 @@ require_relative 'descriptor'
 require_relative 'has_many'
 require_relative 'belongs_to'
 require_relative 'has_one'
+require "oj"
 require 'active_support/all'
 
 module Plucker
@@ -40,6 +41,10 @@ module Plucker
 
         def as_json(options = nil)
             serializable_hash
+        end
+
+        def to_json(options = {})
+            Oj.dump(serializable_hash, mode: :rails)
         end
 
         def get_hash

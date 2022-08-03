@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require_relative 'concerns/caching'
+require "oj"
 require "pluck_all"
 
 module Plucker
@@ -7,11 +8,12 @@ module Plucker
     include Enumerable
     include Caching
 
-    attr_reader :objects, :serializer_class, :options
+    attr_reader :objects, :cache_type, :serializer_class, :options
 
     def initialize(objects, options = {})
       @objects = objects
       @options = options
+      @cache_type = options[:cache] == :multi ? :multi : :collection
       @serializer_class = get_serialized_model(objects)
     end
 
@@ -21,7 +23,7 @@ module Plucker
           serializer_class.new(object).serializable_hash
         end.compact
       else
-        if serializer_class.cache_enabled?
+        if @cache_type == :collection && serializer_class.cache_enabled?
           fetch do
             get_hash
           end
@@ -35,6 +37,10 @@ module Plucker
 
     def as_json(options = nil)
       serializable_hash
+    end
+
+    def to_json(options = {})
+      Oj.dump(serializable_hash, mode: :rails)
     end
 
     def get_hash

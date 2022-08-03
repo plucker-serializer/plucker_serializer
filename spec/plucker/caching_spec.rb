@@ -58,4 +58,50 @@ describe Plucker::Caching do
             expect(memory_store.exist?(cache_key)).to be(true)
         end
     end
+
+    context "collection caching" do
+        class InspectableMemoryStore < ActiveSupport::Cache::MemoryStore
+            def keys
+              @data.keys
+            end
+        end
+        
+        it "use collection cache by default" do
+            memory_store = InspectableMemoryStore.new
+            Plucker.config.cache_store = memory_store
+
+            class FooCacheSerializer < Plucker::Base
+                cache
+                attributes :name, :address
+            end
+
+            foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+            foo1 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+        
+            expect(memory_store.keys.size).to eq(0)
+            serializer_instance = Plucker::Collection.new(Foo.all, serializer: FooCacheSerializer)
+            expect(FooCacheSerializer.cache_enabled?).to eq(true)
+            expect(serializer_instance.to_h).to eq([{"name" => foo.name, "address" => foo.address}, {"name" => foo1.name, "address" => foo1.address}])
+            expect(memory_store.keys.size).to eq(3) # Cache collection & two objects
+        end
+
+        it "use multi cache" do
+            memory_store = InspectableMemoryStore.new
+            Plucker.config.cache_store = memory_store
+
+            class FooCacheSerializer < Plucker::Base
+                cache
+                attributes :name, :address
+            end
+
+            foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+            foo1 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+        
+            expect(memory_store.keys.size).to eq(0)
+            serializer_instance = Plucker::Collection.new(Foo.all, serializer: FooCacheSerializer, cache: :multi)
+            expect(FooCacheSerializer.cache_enabled?).to eq(true)
+            expect(serializer_instance.to_h).to eq([{"name" => foo.name, "address" => foo.address}, {"name" => foo1.name, "address" => foo1.address}])
+            expect(memory_store.keys.size).to eq(2) # Cache two objects
+        end
+    end
 end
