@@ -52,12 +52,10 @@ module Plucker
         end
 
         def associations_hash
-            hash = {}
-            self.class._descriptor._relationships.each do |(key, relationship)|
+            self.class._descriptor._relationships.each_with_object({}) do |(key, relationship), hash|
                 next if relationship.excluded?(self)
                 hash[key.to_s] = relationship.value(self)
             end
-            hash
         end
 
         def attributes_hash

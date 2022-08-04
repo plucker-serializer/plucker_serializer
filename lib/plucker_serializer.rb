@@ -7,7 +7,6 @@ require "plucker/relationship"
 require "plucker/belongs_to"
 require "plucker/has_one"
 require "plucker/has_many"
-require "plucker/field"
 require "plucker/descriptor"
 require "plucker/concerns/caching"
 

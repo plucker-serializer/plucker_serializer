@@ -44,8 +44,8 @@ def benchmark_plucker(prefix, serializer, options = {})
         Plucker::Collection.new(posts_50, serializer: serializer).to_json
     end
 
-    Benchmark.run("Plucker_#{prefix}_Posts_10000") do
-        posts = Post.all.includes(:author)
+    Benchmark.run("Plucker_#{prefix}_Posts_1000") do
+        posts = Post.all.limit(1000).includes(:author)
         Plucker::Collection.new(posts, serializer: serializer).to_json
     end
 end

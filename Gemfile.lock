@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    plucker_serializer (0.3.0)
+    plucker_serializer (0.4.0)
       activesupport
       oj
       pluck_all

@@ -36,8 +36,8 @@ def benchmark(prefix, serializer, options = {})
     Panko::ArraySerializer.new(posts_50, merged_options).to_json
   end
 
-  Benchmark.run("Panko_ActiveRecord_#{prefix}_Posts_10000") do
-    posts = Post.all.includes(:author)
+  Benchmark.run("Panko_ActiveRecord_#{prefix}_Posts_1000") do
+    posts = Post.all.limit(1000).includes(:author)
     Panko::ArraySerializer.new(posts, merged_options).to_json
   end
 end

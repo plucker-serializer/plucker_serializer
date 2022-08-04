@@ -58,7 +58,7 @@ Tag.destroy_all
 
 # Build out the data to serialize
 Post.transaction do
-  ENV.fetch("ITEMS_COUNT", "10000").to_i.times do
+  ENV.fetch("ITEMS_COUNT", "1000").to_i.times do
     post = Post.create(
       body: "something about how password restrictions are evil, and less secure, and with the math to prove it.",
       title: "Your bank is does not know how to do security",

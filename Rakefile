@@ -47,7 +47,7 @@ rescue PTY::ChildExited
     []
 end
 
-def run_benchmarks(files, items_count: 1000)
+def run_benchmarks(files, items_count: 10000)
   headings = ["Benchmark", "ip/s", "allocs/retained"]
   files.each do |benchmark_file|
     lines = run_process "ITEMS_COUNT=#{items_count} RAILS_ENV=production ruby #{benchmark_file}"

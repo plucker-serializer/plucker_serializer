@@ -38,8 +38,8 @@ def benchmark_ams(prefix, serializer, options = {})
     ActiveModelSerializers::SerializableResource.new(posts_50, merged_options).to_json
   end
 
-  Benchmark.run("AMS_#{prefix}_Posts_10000") do
-    posts = Post.all.includes(:author)
+  Benchmark.run("AMS_#{prefix}_Posts_1000") do
+    posts = Post.all.limit(1000).includes(:author)
     ActiveModelSerializers::SerializableResource.new(posts, merged_options).to_json
   end
 end
