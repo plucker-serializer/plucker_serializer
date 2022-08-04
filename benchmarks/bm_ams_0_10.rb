@@ -11,21 +11,21 @@ class AmsAuthorFastSerializer < ActiveModel::Serializer
 end
 
 class AmsTagSerializer < ActiveModel::Serializer
-  attributes :display_name, :description, :created_at
+  attributes :display_name, :description
 end
 
 class AmsPostFastSerializer < ActiveModel::Serializer
-  attributes :id, :body, :title, :author_id, :created_at
+  attributes :id, :body, :title, :author_id
 end
 
 class AmsPostWithHasOneFastSerializer < ActiveModel::Serializer
-  attributes :id, :body, :title, :author_id, :created_at
+  attributes :id, :body, :title, :author_id
 
   has_one :author, serializer: AmsAuthorFastSerializer
 end
 
 class AmsPostHasManySerializer < ActiveModel::Serializer
-  attributes :id, :body, :title, :author_id, :created_at
+  attributes :id, :body, :title, :author_id
 
   has_many :tags, serializer: AmsTagSerializer
 end

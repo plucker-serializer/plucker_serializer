@@ -9,21 +9,21 @@ class AuthorFastSerializer < Panko::Serializer
 end
 
 class TagSerializer < Panko::Serializer
-  attributes :display_name, :description, :created_at
+  attributes :display_name, :description
 end
 
 class PostFastSerializer < Panko::Serializer
-  attributes :id, :body, :title, :author_id, :created_at
+  attributes :id, :body, :title, :author_id
 end
 
 class PostWithHasOneFastSerializer < Panko::Serializer
-  attributes :id, :body, :title, :author_id, :created_at
+  attributes :id, :body, :title, :author_id
 
   has_one :author, serializer: AuthorFastSerializer
 end
 
 class PostHasManySerializer < Panko::Serializer
-  attributes :id, :body, :title, :author_id, :created_at
+  attributes :id, :body, :title, :author_id
 
   has_many :tags, serializer: TagSerializer
 end

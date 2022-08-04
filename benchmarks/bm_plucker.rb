@@ -10,28 +10,28 @@ end
 
 class PluckerTagSerializer < Plucker::Base
     model Tag
-    attributes :display_name, :description, :created_at
+    attributes :display_name, :description
 end
 
 class PluckerPostNoPluckingSerializer < Plucker::Base
-    attributes :id, :body, :title, :author_id, :created_at
+    attributes :id, :body, :title, :author_id
 end
 
 class PluckerPostFastSerializer < Plucker::Base
     model Post
-    attributes :id, :body, :title, :author_id, :created_at
+    attributes :id, :body, :title, :author_id
 end
 
 class PluckerPostHasOneSerializer < Plucker::Base
     model Post
-    attributes :id, :body, :title, :author_id, :created_at
+    attributes :id, :body, :title, :author_id
 
     has_one :author, serializer: PluckerAuthorFastSerializer
 end
 
 class PluckerPostHasManySerializer < Plucker::Base
     model Post
-    attributes :id, :body, :title, :author_id, :created_at
+    attributes :id, :body, :title, :author_id
 
     has_many :tags, serializer: PluckerTagSerializer
 end
