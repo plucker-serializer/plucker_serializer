@@ -30,9 +30,9 @@ module Plucker
       end
     end
 
-    def fetch
+    def fetch(adapter: :json)
       if serializer_class.cache_enabled?
-        serializer_class._cache_store.fetch(cache_key, version: cache_version, options: serializer_class._cache_options) do
+        serializer_class._cache_store.fetch(cache_key(adapter: adapter), version: cache_version, options: serializer_class._cache_options) do
           yield
         end
       else
@@ -45,9 +45,8 @@ module Plucker
       @cache_version = object.cache_version
     end
 
-    def cache_key
-      return @cache_key if defined?(@cache_key)
-      @cache_key = object.cache_key + "/" + serializer_class._cache_digest
+    def cache_key(adapter: :json)
+      object.cache_key + "/" + serializer_class._cache_digest + "/" + adapter.to_s
     end
 
     def serializer_class

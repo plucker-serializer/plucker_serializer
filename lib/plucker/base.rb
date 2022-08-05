@@ -27,9 +27,9 @@ module Plucker
             self.object = object
         end
 
-        def serializable_hash
-            if self.class.cache_enabled?
-                fetch do
+        def serializable_hash(use_cache: true)
+            if use_cache && self.class.cache_enabled?
+                fetch(adapter: :hash) do
                     get_hash
                 end
             else
@@ -43,8 +43,14 @@ module Plucker
             serializable_hash
         end
 
-        def to_json(options = {})
-            Oj.dump(serializable_hash, mode: :rails)
+        def to_json(options = {}, use_cache: true)
+            if use_cache && self.class.cache_enabled?
+                fetch(adapter: :json) do
+                    Oj.dump(get_hash, mode: :rails)
+                end
+            else
+                Oj.dump(get_hash, mode: :rails)
+            end
         end
 
         def get_hash

@@ -23,12 +23,16 @@ module Plucker
           serializer_class.new(object).serializable_hash
         end.compact
       else
-        if @cache_type == :collection && serializer_class.cache_enabled?
-          fetch do
-            get_hash
+        if serializer_class.cache_enabled?
+          if @cache_type == :collection
+            fetch(adapter: :hash) do
+              get_hash(use_cache: false)
+            end
+          elsif @cache_type == :multi
+            get_hash(use_cache: true)
           end
         else
-          get_hash
+          get_hash(use_cache: false)
         end
       end
     end
@@ -40,15 +44,35 @@ module Plucker
     end
 
     def to_json(options = {})
-      Oj.dump(serializable_hash, mode: :rails)
+      if serializer_class.cache_enabled?
+        if @cache_type == :collection
+          fetch(adapter: :json) do
+            Oj.dump(get_collection_json(use_cache: false), mode: :rails)
+          end
+        elsif @cache_type == :multi
+          Oj.dump(get_collection_json(use_cache: true), mode: :rails)
+        end
+      else
+        Oj.dump(get_collection_json(use_cache: false), mode: :rails)
+      end
     end
 
-    def get_hash
+    def get_collection_json(use_cache: false)
       if serializer_class.is_pluckable?
         associated_hash
       else
         objects.map do |object|
-          serializer_class.new(object).serializable_hash
+          Oj.load(serializer_class.new(object).to_json(use_cache: use_cache))
+        end
+      end
+    end
+
+    def get_hash(use_cache: false)
+      if serializer_class.is_pluckable?
+        associated_hash
+      else
+        objects.map do |object|
+          serializer_class.new(object).serializable_hash(use_cache: use_cache)
         end.compact
       end
     end
@@ -58,9 +82,8 @@ module Plucker
       @cache_version = objects.cache_version
     end
 
-    def cache_key
-      return @cache_key if defined?(@cache_key)
-      @cache_key = objects.cache_key + '/' + serializer_class._cache_digest
+    def cache_key(adapter: :json)
+      objects.cache_key + '/' + serializer_class._cache_digest + "/" + adapter.to_s
     end
 
     private
