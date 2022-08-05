@@ -222,6 +222,30 @@ describe Plucker::Caching do
             expect(memory_store.read(foo1_serializer.cache_key)).to eq({"name" => foo1.name, "address" => foo1.address}.to_json)
         end
 
+        it "json multi plucking" do
+            memory_store = InspectableMemoryStore.new
+            Plucker.config.cache_store = memory_store
+
+            class FooJsonMultiPluckingSerializer < Plucker::Base
+                model Foo
+                cache
+                attributes :name, :address
+            end
+
+            foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+            foo1 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+            expected_result = [{"name" => foo.name, "address" => foo.address}, {"name" => foo1.name, "address" => foo1.address}].to_json
+        
+            expect(memory_store.keys.size).to eq(0)
+            serializer_instance = Plucker::Collection.new(Foo.all, serializer: FooJsonMultiPluckingSerializer, cache: :multi)
+            expect(FooJsonMultiPluckingSerializer.cache_enabled?).to eq(true)
+            expect(serializer_instance.to_json).to eq(expected_result)
+
+            # Current behavior is that plucked collection will not cache single objects
+            # Use collection cache in this case
+            expect(memory_store.keys.size).to eq(0) # Cache single objects
+        end
+
         it "hash multi" do
             memory_store = InspectableMemoryStore.new
             Plucker.config.cache_store = memory_store
@@ -245,6 +269,30 @@ describe Plucker::Caching do
             foo1_serializer = FooHashMultiSerializer.new(foo1)
             expect(memory_store.read(foo_serializer.cache_key(adapter: :hash))).to eq({"name" => foo.name, "address" => foo.address})
             expect(memory_store.read(foo1_serializer.cache_key(adapter: :hash))).to eq({"name" => foo1.name, "address" => foo1.address})
+        end
+
+        it "hash multi plucking" do
+            memory_store = InspectableMemoryStore.new
+            Plucker.config.cache_store = memory_store
+
+            class FooHashMultiPluckingSerializer < Plucker::Base
+                model Foo
+                cache
+                attributes :name, :address
+            end
+
+            foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+            foo1 = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+            expected_result = [{"name" => foo.name, "address" => foo.address}, {"name" => foo1.name, "address" => foo1.address}]
+        
+            expect(memory_store.keys.size).to eq(0)
+            serializer_instance = Plucker::Collection.new(Foo.all, serializer: FooHashMultiPluckingSerializer, cache: :multi)
+            expect(FooHashMultiPluckingSerializer.cache_enabled?).to eq(true)
+            expect(serializer_instance.to_h).to eq(expected_result)
+
+            # Current behavior is that plucked collection will not cache single objects
+            # Use collection cache in this case
+            expect(memory_store.keys.size).to eq(0)
         end
     end
 end
