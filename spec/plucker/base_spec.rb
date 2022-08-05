@@ -84,6 +84,36 @@ describe Plucker::Base do
   
         expect(FooWithBlockAttributeSerializer.new(foo).to_h).to eq({"name" => foo.name, "address" => foo.name})
     end
+
+    it "attribute with false condition" do
+      class FooFalseConditionAttributeSerializer < Plucker::Base
+          attributes :name
+          attribute :address, if: :should_include_address?
+
+          def should_include_address?
+            false
+          end
+      end
+
+      foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+
+      expect(FooFalseConditionAttributeSerializer.new(foo).to_h).to eq({"name" => foo.name})
+    end
+
+    it "attribute with true condition" do
+      class FooTrueConditionAttributeSerializer < Plucker::Base
+          attributes :name
+          attribute :address, if: :should_include_address?
+
+          def should_include_address?
+            true
+          end
+      end
+
+      foo = Foo.create(name: Faker::Lorem.word, address: Faker::Lorem.word).reload
+
+      expect(FooTrueConditionAttributeSerializer.new(foo).to_h).to eq({"name" => foo.name, "address" => foo.address})
+    end
   end
 
   context "associations" do

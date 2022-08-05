@@ -26,8 +26,10 @@ module Plucker
             @block.blank?
         end
 
-        def excluded?(record)
+        def should_include?(serializer)
             case @condition
+            when nil
+                true
             when Symbol
                 serializer.public_send(@condition)
             when String
