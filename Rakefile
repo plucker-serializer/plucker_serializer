@@ -46,7 +46,7 @@ rescue PTY::ChildExited
   []
 end
 
-def run_benchmarks(files, items_count: 10_000)
+def run_benchmarks(files, items_count: 100)
   headings = ['Benchmark', 'ip/s', 'allocs/retained']
   files.each do |benchmark_file|
     lines = run_process "ITEMS_COUNT=#{items_count} RAILS_ENV=production ruby #{benchmark_file}"
@@ -66,5 +66,5 @@ end
 
 desc 'Run all benchmarks'
 task :benchmarks do
-  run_benchmarks Dir[File.join(__dir__, 'benchmarks', '**', 'bm_*')]
+  run_benchmarks Dir[File.join(__dir__, 'benchmarks', '**', 'bm_plu*')]
 end

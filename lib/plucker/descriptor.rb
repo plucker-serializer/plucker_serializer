@@ -2,32 +2,32 @@
 
 module Plucker
   class Descriptor
-    attr_accessor :_serialized_model, :_attributes, :_relationships, :_pluckable_columns, :_is_pluckable
+    attr_accessor :_serialized_model, :_attributes, :_relationships, :_pluckable_columns, :_pluckable
 
     def initialize(serializer_class)
       self._serialized_model = get_serialized_model(serializer_class)
       self._attributes = {}
       self._relationships = {}
       self._pluckable_columns = Set.new
-      self._is_pluckable = true
+      self._pluckable = true
     end
 
-    def is_pluckable?
-      _is_pluckable
+    def pluckable?
+      _pluckable
     end
 
     def add_attribute(key, attr)
       _attributes[key] = attr
-      if attr.is_pluckable? && _serialized_model&.column_names&.include?(attr.name.to_s)
+      if attr.pluckable? && _serialized_model&.column_names&.include?(attr.name.to_s)
         _pluckable_columns << attr.name
       else
-        self._is_pluckable = false
+        self._pluckable = false
       end
     end
 
     def add_relationship(key, relationship)
       _relationships[key] = relationship
-      self._is_pluckable = false
+      self._pluckable = false
     end
 
     def set_model(model)
@@ -36,7 +36,7 @@ module Plucker
 
     def get_serialized_model(serializer_class)
       serializer_class.name.split(/Serializer/).first.constantize
-    rescue NameError, LoadError => e
+    rescue NameError, LoadError
       nil
     end
   end

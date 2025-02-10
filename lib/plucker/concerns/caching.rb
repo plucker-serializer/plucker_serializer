@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'active_support/all'
 
 module Plucker
@@ -16,7 +17,8 @@ module Plucker
     module ClassMethods
       def _cache_digest
         return @_cache_digest if defined?(@_cache_digest)
-        @_cache_digest = Digest::SHA1.hexdigest(self.name)
+
+        @_cache_digest = Digest::SHA1.hexdigest(name)
       end
 
       def cache(options = {})
@@ -26,15 +28,14 @@ module Plucker
       end
 
       def cache_enabled?
-        self._cache_store.present? && _cache.present?
+        _cache_store.present? && _cache.present?
       end
     end
 
-    def fetch(adapter: :json)
+    def fetch(adapter: :json, &block)
       if serializer_class.cache_enabled?
-        serializer_class._cache_store.fetch(cache_key(adapter: adapter), version: cache_version, options: serializer_class._cache_options) do
-          yield
-        end
+        serializer_class._cache_store.fetch(cache_key(adapter: adapter), version: cache_version,
+                                                                         options: serializer_class._cache_options, &block)
       else
         yield
       end
@@ -42,11 +43,12 @@ module Plucker
 
     def cache_version
       return @cache_version if defined?(@cache_version)
+
       @cache_version = object.cache_version
     end
 
     def cache_key(adapter: :json)
-      object.cache_key + "/" + serializer_class._cache_digest + "/" + adapter.to_s
+      "#{object.cache_key}/#{serializer_class._cache_digest}/#{adapter}"
     end
 
     def serializer_class

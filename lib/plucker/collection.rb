@@ -57,7 +57,7 @@ module Plucker
     end
 
     def get_collection_json(use_cache: false)
-      if serializer_class.is_pluckable?
+      if serializer_class.pluckable?
         associated_hash
       else
         objects.map do |object|
@@ -67,8 +67,8 @@ module Plucker
     end
 
     def get_hash(use_cache: false)
-      if serializer_class.is_pluckable?
-        associated_hash
+      if serializer_class.pluckable?
+        associated_hash.map(&:symbolize_keys)
       else
         objects.map do |object|
           serializer_class.new(object).serializable_hash(use_cache: use_cache)
@@ -77,9 +77,7 @@ module Plucker
     end
 
     def cache_version
-      return @cache_version if defined?(@cache_version)
-
-      @cache_version = objects.cache_version
+      @cache_version ||= objects.cache_version
     end
 
     def cache_key(adapter: :json)

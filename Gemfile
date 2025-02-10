@@ -15,8 +15,9 @@ gem 'pluck_all', '~> 2.3.4'
 
 group :benchmarks do
   gem 'pg', '>= 0.18', '< 2.0'
-  gem 'sqlite3', '~> 1.4'
+  gem 'sqlite3', '~> 2.5.0'
 
+  gem 'get_process_mem'
   gem 'memory_profiler'
   gem 'ruby-prof', platforms: [:mri]
   gem 'ruby-prof-flamegraph', platforms: [:mri]

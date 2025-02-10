@@ -62,7 +62,7 @@ module Plucker
       self.class._descriptor._relationships.each_with_object({}) do |(key, relationship), hash|
         next unless relationship.should_include?(self)
 
-        hash[key.to_s] = relationship.value(self)
+        hash[key.to_sym] = relationship.value(self)
       end
     end
 
@@ -70,12 +70,12 @@ module Plucker
       self.class._descriptor._attributes.each_with_object({}) do |(key, attr), hash|
         next unless attr.should_include?(self)
 
-        hash[key.to_s] = attr.value(self)
+        hash[key.to_sym] = attr.value(self)
       end
     end
 
-    def self.is_pluckable?
-      self._descriptor.is_pluckable?
+    def self.pluckable?
+      self._descriptor.pluckable?
     end
 
     def self.pluckable_columns
@@ -89,19 +89,27 @@ module Plucker
     end
 
     def self.attribute(attr, options = {}, &block)
-      self._descriptor.add_attribute(options.fetch(:key, attr), Plucker::Attribute.new(attr, options, block))
+      key = options.fetch(:key, attr)
+      attribute = Plucker::Attribute.new(attr, options, block)
+      self._descriptor.add_attribute(key.to_sym, attribute)
     end
 
     def self.belongs_to(attr, options = {}, &block)
-      self._descriptor.add_relationship(options.fetch(:key, attr), Plucker::BelongsTo.new(attr, options, block))
+      key = options.fetch(:key, attr)
+      belongs_to = Plucker::BelongsTo.new(attr, options, block)
+      self._descriptor.add_relationship(key.to_sym, belongs_to)
     end
 
     def self.has_one(attr, options = {}, &block)
-      self._descriptor.add_relationship(options.fetch(:key, attr), Plucker::HasOne.new(attr, options, block))
+      key = options.fetch(:key, attr)
+      has_one = Plucker::HasOne.new(attr, options, block)
+      self._descriptor.add_relationship(key.to_sym, has_one)
     end
 
     def self.has_many(attr, options = {}, &block)
-      self._descriptor.add_relationship(options.fetch(:key, attr), Plucker::HasMany.new(attr, options, block))
+      key = options.fetch(:key, attr)
+      has_many = Plucker::HasMany.new(attr, options, block)
+      self._descriptor.add_relationship(key.to_sym, has_many)
     end
 
     def self.model(attr)

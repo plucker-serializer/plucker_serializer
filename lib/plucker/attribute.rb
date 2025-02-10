@@ -27,7 +27,7 @@ module Plucker
       end
     end
 
-    def is_pluckable?
+    def pluckable?
       @block.blank?
     end
 

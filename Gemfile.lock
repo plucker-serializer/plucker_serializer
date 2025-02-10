@@ -66,6 +66,17 @@ GEM
     erubi (1.13.1)
     faker (3.5.1)
       i18n (>= 1.8.11, < 2)
+    ffi (1.17.1-aarch64-linux-gnu)
+    ffi (1.17.1-aarch64-linux-musl)
+    ffi (1.17.1-arm-linux-gnu)
+    ffi (1.17.1-arm-linux-musl)
+    ffi (1.17.1-arm64-darwin)
+    ffi (1.17.1-x86_64-darwin)
+    ffi (1.17.1-x86_64-linux-gnu)
+    ffi (1.17.1-x86_64-linux-musl)
+    get_process_mem (1.0.0)
+      bigdecimal (>= 2.0)
+      ffi (~> 1.0)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     json (2.10.0)
@@ -159,11 +170,14 @@ GEM
       ruby-prof (~> 0.13)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
-    sqlite3 (1.7.3-aarch64-linux)
-    sqlite3 (1.7.3-arm-linux)
-    sqlite3 (1.7.3-arm64-darwin)
-    sqlite3 (1.7.3-x86_64-darwin)
-    sqlite3 (1.7.3-x86_64-linux)
+    sqlite3 (2.5.0-aarch64-linux-gnu)
+    sqlite3 (2.5.0-aarch64-linux-musl)
+    sqlite3 (2.5.0-arm-linux-gnu)
+    sqlite3 (2.5.0-arm-linux-musl)
+    sqlite3 (2.5.0-arm64-darwin)
+    sqlite3 (2.5.0-x86_64-darwin)
+    sqlite3 (2.5.0-x86_64-linux-gnu)
+    sqlite3 (2.5.0-x86_64-linux-musl)
     terminal-table (4.0.0)
       unicode-display_width (>= 1.1.1, < 4)
     timeout (0.4.3)
@@ -175,10 +189,8 @@ GEM
     useragent (0.16.11)
 
 PLATFORMS
-  aarch64-linux
   aarch64-linux-gnu
   aarch64-linux-musl
-  arm-linux
   arm-linux-gnu
   arm-linux-musl
   arm64-darwin
@@ -194,6 +206,7 @@ DEPENDENCIES
   benchmark-ips
   byebug
   faker
+  get_process_mem
   memory_profiler
   oj (~> 3.16.9)
   panko_serializer
@@ -206,7 +219,7 @@ DEPENDENCIES
   rubocop
   ruby-prof
   ruby-prof-flamegraph
-  sqlite3 (~> 1.4)
+  sqlite3 (~> 2.5.0)
   terminal-table
 
 BUNDLED WITH
