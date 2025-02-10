@@ -1,7 +1,8 @@
 # frozen_string_literal: true
+
 require_relative 'concerns/caching'
-require "oj"
-require "pluck_all"
+require 'oj'
+require 'pluck_all'
 
 module Plucker
   class Collection
@@ -18,22 +19,20 @@ module Plucker
     end
 
     def serializable_hash
-      if (not objects.is_a?(ActiveRecord::Relation))
+      if !objects.is_a?(ActiveRecord::Relation)
         objects.map do |object|
           serializer_class.new(object).serializable_hash
         end.compact
-      else
-        if serializer_class.cache_enabled?
-          if @cache_type == :collection
-            fetch(adapter: :hash) do
-              get_hash(use_cache: false)
-            end
-          elsif @cache_type == :multi
-            get_hash(use_cache: true)
+      elsif serializer_class.cache_enabled?
+        if @cache_type == :collection
+          fetch(adapter: :hash) do
+            get_hash(use_cache: false)
           end
-        else
-          get_hash(use_cache: false)
+        elsif @cache_type == :multi
+          get_hash(use_cache: true)
         end
+      else
+        get_hash(use_cache: false)
       end
     end
     alias to_hash serializable_hash
@@ -79,20 +78,22 @@ module Plucker
 
     def cache_version
       return @cache_version if defined?(@cache_version)
+
       @cache_version = objects.cache_version
     end
 
     def cache_key(adapter: :json)
-      objects.cache_key + '/' + serializer_class._cache_digest + "/" + adapter.to_s
+      "#{objects.cache_key}/#{serializer_class._cache_digest}/#{adapter}"
     end
 
     private
+
     def associated_hash
       pluck_to_hash(objects, serializer_class.pluckable_columns.to_a)
     end
 
     def pluck_to_hash(objects, attrs)
-      namespaced_attrs = attrs.map { |attr| objects.model.table_name.to_s + "." + attr.to_s }
+      namespaced_attrs = attrs.map { |attr| "#{objects.model.table_name}.#{attr}" }
       objects.pluck_all(namespaced_attrs.join(','))
     end
 
