@@ -13,66 +13,44 @@ module Plucker
 
     def initialize(objects, options = {})
       @objects = objects
-      @options = options
+      @options = options.freeze
       @cache_type = options[:cache] == :multi ? :multi : :collection
-      @serializer_class = get_serialized_model(objects)
+      @serializer_class = determine_serializer_class(objects)
     end
 
     def serializable_hash
-      if !objects.is_a?(ActiveRecord::Relation)
-        objects.map do |object|
+      unless objects.is_a?(ActiveRecord::Relation)
+        return objects.map do |object|
           serializer_class.new(object).serializable_hash
         end.compact
-      elsif serializer_class.cache_enabled?
-        if @cache_type == :collection
-          fetch(adapter: :hash) do
-            get_hash(use_cache: false)
-          end
-        elsif @cache_type == :multi
-          get_hash(use_cache: true)
+      end
+
+      if serializer_class.cache_enabled?
+        if cache_type == :collection
+          fetch(adapter: :hash) { compute_hash(use_cache: false) }
+        elsif cache_type == :multi
+          compute_hash(use_cache: true)
         end
       else
-        get_hash(use_cache: false)
+        compute_hash(use_cache: false)
       end
     end
     alias to_hash serializable_hash
     alias to_h serializable_hash
 
-    def as_json(options = nil)
+    def as_json(_options = nil)
       serializable_hash
     end
 
-    def to_json(options = {})
+    def to_json(_options = {})
       if serializer_class.cache_enabled?
-        if @cache_type == :collection
-          fetch(adapter: :json) do
-            Oj.dump(get_collection_json(use_cache: false), mode: :rails)
-          end
-        elsif @cache_type == :multi
+        if cache_type == :collection
+          fetch(adapter: :json) { Oj.dump(get_collection_json(use_cache: false), mode: :rails) }
+        elsif cache_type == :multi
           Oj.dump(get_collection_json(use_cache: true), mode: :rails)
         end
       else
         Oj.dump(get_collection_json(use_cache: false), mode: :rails)
-      end
-    end
-
-    def get_collection_json(use_cache: false)
-      if serializer_class.pluckable?
-        associated_hash
-      else
-        objects.map do |object|
-          Oj.load(serializer_class.new(object).to_json(use_cache: use_cache))
-        end
-      end
-    end
-
-    def get_hash(use_cache: false)
-      if serializer_class.pluckable?
-        associated_hash.map(&:symbolize_keys)
-      else
-        objects.map do |object|
-          serializer_class.new(object).serializable_hash(use_cache: use_cache)
-        end.compact
       end
     end
 
@@ -86,16 +64,34 @@ module Plucker
 
     private
 
+    def get_collection_json(use_cache: false)
+      if serializer_class.pluckable?
+        associated_hash
+      else
+        objects.map { |object| Oj.load(serializer_class.new(object).to_json(use_cache: use_cache)) }
+      end
+    end
+
+    def compute_hash(use_cache: false)
+      if serializer_class.pluckable?
+        associated_hash.map(&:symbolize_keys)
+      else
+        objects.map { |object| serializer_class.new(object).serializable_hash(use_cache: use_cache) }.compact
+      end
+    end
+
     def associated_hash
-      pluck_to_hash(objects, serializer_class.pluckable_columns.to_a)
+      objects.pluck_all(namespaced_columns)
     end
 
-    def pluck_to_hash(objects, attrs)
-      namespaced_attrs = attrs.map { |attr| "#{objects.model.table_name}.#{attr}" }
-      objects.pluck_all(namespaced_attrs.join(','))
+    def namespaced_columns
+      @namespaced_columns ||= begin
+        cols = serializer_class.pluckable_columns.to_a.map { |attr| "#{objects.model.table_name}.#{attr}" }
+        cols.join(',').freeze
+      end
     end
 
-    def get_serialized_model(objects)
+    def determine_serializer_class(objects)
       if options[:serializer].blank?
         "#{objects.klass.name.demodulize.camelize}Serializer".constantize
       else

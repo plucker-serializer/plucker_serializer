@@ -66,5 +66,5 @@ end
 
 desc 'Run all benchmarks'
 task :benchmarks do
-  run_benchmarks Dir[File.join(__dir__, 'benchmarks', '**', 'bm_plu*')]
+  run_benchmarks Dir[File.join(__dir__, 'benchmarks', '**', 'bm_*')]
 end

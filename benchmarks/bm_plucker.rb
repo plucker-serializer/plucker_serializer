@@ -72,7 +72,7 @@ def benchmark_plucker_memory(prefix, serializer, options = {})
   puts "Memory diff (leaked): #{leaked} MB"
 end
 
-# benchmark_plucker 'Simple', PluckerPostFastSerializer
-# benchmark_plucker 'HasOne', PluckerPostHasOneSerializer
-# benchmark_plucker 'HasMany', PluckerPostHasManySerializer
-benchmark_plucker_memory 'Simple', PluckerPostFastSerializer
+benchmark_plucker 'Simple', PluckerPostFastSerializer
+benchmark_plucker 'HasOne', PluckerPostHasOneSerializer
+benchmark_plucker 'HasMany', PluckerPostHasManySerializer
+# benchmark_plucker_memory 'Simple', PluckerPostHasManySerializer
