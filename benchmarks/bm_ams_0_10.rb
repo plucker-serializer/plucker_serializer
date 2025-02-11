@@ -1,7 +1,8 @@
 # frozen_string_literal: true
-require_relative "./benchmarking_support"
-require_relative "./app"
-require_relative "./setup"
+
+require_relative './benchmarking_support'
+require_relative './app'
+require_relative './setup'
 
 # disable logging for benchmarks
 ActiveModelSerializers.logger = ActiveSupport::TaggedLogging.new(ActiveSupport::Logger.new('/dev/null'))
@@ -44,6 +45,6 @@ def benchmark_ams(prefix, serializer, options = {})
   end
 end
 
-benchmark_ams "Simple", AmsPostFastSerializer
-benchmark_ams "HasOne", AmsPostWithHasOneFastSerializer
-benchmark_ams "HasMany", AmsPostHasManySerializer
+benchmark_ams 'Simple', AmsPostFastSerializer
+benchmark_ams 'HasOne', AmsPostWithHasOneFastSerializer
+benchmark_ams 'HasMany', AmsPostHasManySerializer

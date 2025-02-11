@@ -1,8 +1,9 @@
 # frozen_string_literal: true
-require_relative "./benchmarking_support"
-require_relative "./app"
-require_relative "./setup"
-require "active_record/connection_adapters/postgresql_adapter"
+
+require_relative './benchmarking_support'
+require_relative './app'
+require_relative './setup'
+require 'active_record/connection_adapters/postgresql_adapter'
 
 class AuthorFastSerializer < Panko::Serializer
   attributes :id, :name
@@ -42,6 +43,6 @@ def benchmark(prefix, serializer, options = {})
   end
 end
 
-benchmark "Simple", PostFastSerializer
-benchmark "HasOne", PostWithHasOneFastSerializer
-benchmark "HasMany", PostHasManySerializer
+benchmark 'Simple', PostFastSerializer
+benchmark 'HasOne', PostWithHasOneFastSerializer
+benchmark 'HasMany', PostHasManySerializer

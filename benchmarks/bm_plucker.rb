@@ -55,9 +55,9 @@ def benchmark_plucker_memory(prefix, serializer, options = {})
   GC.start
   mem_before = GetProcessMem.new.mb
 
-  report = MemoryProfiler.report do
+  report = MemoryProfiler.report(allow_files: 'plucker_serializer') do
     Post.all.limit(100).each do |post|
-      json = serializer.new(post).to_json
+      json = serializer.new(post).as_json
     end
   end
 

@@ -1,13 +1,13 @@
-
 # frozen_string_literal: true
-require "benchmark/ips"
-require "json"
-require "memory_profiler"
+
+require 'benchmark/ips'
+require 'json'
+require 'memory_profiler'
 
 module Benchmark
   module Runner
     def run(label = nil, time: 10, disable_gc: true, warmup: 3, &block)
-      fail ArgumentError.new, "block should be passed" unless block_given?
+      raise ArgumentError.new, 'block should be passed' unless block_given?
 
       GC.start
 
@@ -20,7 +20,7 @@ module Benchmark
       memory_report = MemoryProfiler.report(&block)
 
       report = Benchmark.ips(time, warmup, true) do |x|
-        x.report(label) { yield }
+        x.report(label, &block)
       end
 
       results = {
@@ -30,7 +30,6 @@ module Benchmark
       }.to_json
 
       puts results
-
     end
   end
 
